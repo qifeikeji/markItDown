@@ -28,7 +28,7 @@ jobs:
       run: |
         npm install
         npm uninstall node-sass
-        npm install --save-dev sass electron@22.3.27 @electron-forge/cli @electron-forge/maker-appimage
+        npm install --save-dev sass electron@22.3.27 electron-builder@23.6.0
         
     - name: Create electron main file
       run: |
@@ -72,29 +72,7 @@ jobs:
       run: |
         npm pkg set main="src/electron/main.js"
         npm pkg set scripts.electron-dev="electron ."
-        npm pkg set scripts.package="electron-forge package"
-        npm pkg set scripts.make="electron-forge make"
-        
-    - name: Configure Forge
-      run: |
-        echo '{
-          "packagerConfig": {
-            "name": "MarkItDown",
-            "executableName": "markitdown",
-            "icon": "./assets/icon",
-            "asar": true
-          },
-          "makers": [
-            {
-              "name": "@electron-forge/maker-appimage",
-              "config": {
-                "options": {
-                  "bin": "markitdown"
-                }
-              }
-            }
-          ]
-        }' > forge.config.js
+        npm pkg set scripts.electron-pack="electron-builder -c.extraMetadata.main=src/electron/main.js"
         
     - name: Build React app
       run: npm run build
@@ -107,17 +85,15 @@ jobs:
     - name: Build AppImage
       run: |
         echo "Starting build process..."
-        npm run package
-        echo "Package completed, starting make..."
-        npm run make
-        echo "Make completed, checking output..."
-        ls -la out/
+        npm run electron-pack -- --linux AppImage
+        echo "Build completed, checking output..."
+        ls -la dist/
       env:
-        DEBUG: electron-forge:*
-        ELECTRON_FORGE_LOGGING: true
+        DEBUG: electron-builder
+        ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: true
         
     - name: Upload AppImage
       uses: actions/upload-artifact@v4
       with:
         name: markItDown.AppImage
-        path: out/**/*.AppImage 
+        path: dist/*.AppImage 
