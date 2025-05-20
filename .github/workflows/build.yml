@@ -51,8 +51,9 @@ jobs:
       
     - name: Configure npm
       run: |
-        npm config set electron_mirror=https://npmmirror.com/mirrors/electron/
-        npm config set electron-builder-binaries_mirror=https://npmmirror.com/mirrors/electron-builder-binaries/
+        echo "registry=https://registry.npmmirror.com/" > .npmrc
+        echo "electron_mirror=https://npmmirror.com/mirrors/electron/" >> .npmrc
+        echo "electron-builder-binaries_mirror=https://npmmirror.com/mirrors/electron-builder-binaries/" >> .npmrc
         
     - name: Build AppImage
       run: |
