@@ -43,22 +43,33 @@ jobs:
     - name: Update dependencies
       run: |
         echo "Updating dependencies to latest versions..."
-        npm install --legacy-peer-deps @mui/material@latest @mui/lab@latest
+        npm install --legacy-peer-deps @mui/material@5.15.0 @mui/lab@5.0.0-alpha.170
         npm install --legacy-peer-deps @emotion/react@latest @emotion/styled@latest
         npm install --legacy-peer-deps @testing-library/jest-dom@latest @testing-library/react@latest @testing-library/user-event@latest
         npm install --legacy-peer-deps babel-plugin-prismjs@latest dompurify@latest marked@latest prismjs@latest
-        npm install --legacy-peer-deps react@latest react-dom@latest react-full-screen@latest react-icons@latest react-split@latest
+        npm install --legacy-peer-deps react@latest react-dom@latest react-scripts@5 react-full-screen@latest react-icons@latest react-split@latest
         npm install --legacy-peer-deps --save-dev sass@latest electron@latest electron-builder@latest electron-is-dev@latest
         echo "Dependencies updated successfully"
         
     - name: Update Material-UI imports
       run: |
         echo "Updating Material-UI imports..."
-        find src -type f -name "*.jsx" -o -name "*.js" | xargs sed -i 's/@material-ui\/core/@mui\/material/g'
-        find src -type f -name "*.jsx" -o -name "*.js" | xargs sed -i 's/@material-ui\/lab/@mui\/lab/g'
-        find src -type f -name "*.jsx" -o -name "*.js" | xargs sed -i 's/@material-ui\/styles/@mui\/styles/g'
-        find src -type f -name "*.jsx" -o -name "*.js" | xargs sed -i 's/@material-ui\/icons/@mui\/icons-material/g'
-        find src -type f -name "*.jsx" -o -name "*.js" | xargs sed -i 's/import { Alert } from .@mui\/lab./import { Alert } from .@mui\/material./g'
+        echo "Searching for files containing @mui/lab..."
+        grep -r "@mui/lab" src/ || true
+        echo "Searching for files containing Alert..."
+        grep -r "Alert" src/ || true
+        
+        echo "Updating imports..."
+        find src -type f \( -name "*.jsx" -o -name "*.js" \) | xargs sed -i 's|import { Alert } from .@mui/lab.|import { Alert } from .@mui/material.|g'
+        find src -type f \( -name "*.jsx" -o -name "*.js" \) | xargs sed -i 's|import Alert from .@mui/lab.|import Alert from .@mui/material.|g'
+        find src -type f \( -name "*.jsx" -o -name "*.js" \) | xargs sed -i 's|@material-ui/core|@mui/material|g'
+        find src -type f \( -name "*.jsx" -o -name "*.js" \) | xargs sed -i 's|@material-ui/lab|@mui/lab|g'
+        find src -type f \( -name "*.jsx" -o -name "*.js" \) | xargs sed -i 's|@material-ui/styles|@mui/styles|g'
+        find src -type f \( -name "*.jsx" -o -name "*.js" \) | xargs sed -i 's|@material-ui/icons|@mui/icons-material|g'
+        
+        echo "Verifying imports after update..."
+        grep -r "@mui/lab" src/ || true
+        grep -r "Alert" src/ || true
         echo "Material-UI imports updated"
         
     - name: Update package.json
@@ -79,8 +90,19 @@ jobs:
     - name: Build React app
       run: |
         echo "Building React application..."
-        export NODE_OPTIONS=--openssl-legacy-provider
-        npm run build
+        echo "Current package.json:"
+        cat package.json
+        echo "Checking src directory structure:"
+        ls -la src/
+        echo "Running build..."
+        npm run build || { 
+          echo "Build failed, printing relevant files..."
+          echo "Files containing Alert:"
+          grep -r "Alert" src/ || true
+          echo "Files containing @mui/lab:"
+          grep -r "@mui/lab" src/ || true
+          exit 1
+        }
         echo "React build completed"
         echo "Checking build directory contents:"
         ls -la build/
