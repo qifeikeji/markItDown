@@ -91,6 +91,7 @@ jobs:
       env:
         DEBUG: electron-builder
         ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: true
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Upload AppImage
       uses: actions/upload-artifact@v4
