@@ -34,7 +34,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron-dev": "electron .",
-    "electron-pack": "electron-builder -c.extraMetadata.main=src/electron/main.js"
+    "electron-pack": "electron-builder"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -51,19 +51,33 @@
       "last 1 safari version"
     ]
   },
+  "main": "main.js",
   "build": {
     "appId": "com.markitdown.app",
     "productName": "MarkItDown",
     "files": [
       "build/**/*",
-      "src/electron/**/*"
+      "main.js",
+      "node_modules/**/*"
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/electron-is-dev/**/*"
     ],
     "directories": {
-      "buildResources": "assets"
+      "buildResources": "build",
+      "output": "dist"
     },
     "linux": {
       "target": ["AppImage"],
-      "category": "Office"
-    }
+      "category": "Office",
+      "executableName": "markitdown"
+    },
+    "extraResources": [
+      {
+        "from": "build",
+        "to": "build"
+      }
+    ]
   }
 }
