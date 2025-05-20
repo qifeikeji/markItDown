@@ -50,6 +50,15 @@ jobs:
         npm install --legacy-peer-deps --save-dev sass@latest electron@latest electron-builder@latest electron-is-dev@latest
         echo "Dependencies updated successfully"
         
+    - name: Update Material-UI imports
+      run: |
+        echo "Updating Material-UI imports..."
+        find src -type f -name "*.jsx" -o -name "*.js" | xargs sed -i 's/@material-ui\/core/@mui\/material/g'
+        find src -type f -name "*.jsx" -o -name "*.js" | xargs sed -i 's/@material-ui\/lab/@mui\/lab/g'
+        find src -type f -name "*.jsx" -o -name "*.js" | xargs sed -i 's/@material-ui\/styles/@mui\/styles/g'
+        find src -type f -name "*.jsx" -o -name "*.js" | xargs sed -i 's/@material-ui\/icons/@mui\/icons-material/g'
+        echo "Material-UI imports updated"
+        
     - name: Update package.json
       run: |
         echo "Updating package.json configuration..."
