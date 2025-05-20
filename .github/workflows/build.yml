@@ -32,17 +32,23 @@ jobs:
         echo "electron-builder-binaries_mirror=https://npmmirror.com/mirrors/electron-builder-binaries/" >> .npmrc
         cat .npmrc
         
-    - name: Install dependencies
+    - name: Clean install dependencies
       run: |
+        echo "Removing old package-lock.json and node_modules..."
+        rm -rf package-lock.json node_modules
         echo "Installing dependencies..."
         npm install
-        echo "Removing problematic dependencies..."
-        npm uninstall node-sass @testing-library/user-event
-        echo "Installing required dependencies..."
-        npm install --save sass electron-is-dev
-        echo "Installing dev dependencies..."
-        npm install --save-dev electron@latest electron-builder@latest
         echo "Dependencies installed successfully"
+        
+    - name: Update dependencies
+      run: |
+        echo "Updating dependencies to latest versions..."
+        npm install @mui/material@latest @mui/lab@latest
+        npm install @testing-library/jest-dom@latest @testing-library/react@latest @testing-library/user-event@latest
+        npm install babel-plugin-prismjs@latest dompurify@latest marked@latest prismjs@latest
+        npm install react@latest react-dom@latest react-full-screen@latest react-icons@latest react-split@latest
+        npm install --save-dev sass@latest electron@latest electron-builder@latest electron-is-dev@latest
+        echo "Dependencies updated successfully"
         
     - name: Update package.json
       run: |
