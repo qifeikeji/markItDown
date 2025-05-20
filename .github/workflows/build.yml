@@ -17,7 +17,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         
     - name: Install system dependencies
       run: |
@@ -45,14 +45,14 @@ jobs:
         npm pkg set build.linux.category="Office"
         
     - name: Build React app
-      run: npm run build
-      env:
-        NODE_OPTIONS: '--openssl-legacy-provider'
-      
-    - name: Configure npm mirrors
       run: |
-        npm config set electron_mirror https://npmmirror.com/mirrors/electron/
-        npm config set electron_builder_binaries_mirror https://npmmirror.com/mirrors/electron-builder-binaries/
+        export NODE_OPTIONS=--openssl-legacy-provider
+        npm run build
+      
+    - name: Configure npm
+      run: |
+        npm config set electron_mirror=https://npmmirror.com/mirrors/electron/
+        npm config set electron-builder-binaries_mirror=https://npmmirror.com/mirrors/electron-builder-binaries/
         
     - name: Build AppImage
       run: |
@@ -62,6 +62,7 @@ jobs:
         echo "Build directory structure:"
         ls -la build/
         echo "Running electron-builder..."
+        export NODE_OPTIONS=--openssl-legacy-provider
         npm run electron-pack -- --linux AppImage
         echo "Build completed, checking output..."
         ls -la dist/
@@ -69,7 +70,6 @@ jobs:
         DEBUG: electron-builder
         ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: true
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        NODE_OPTIONS: '--openssl-legacy-provider'
         
     - name: Make AppImage executable
       run: |
@@ -79,4 +79,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: markItDown.AppImage
-        path: dist/*.AppImage
+        path: dist/*.AppImage 
