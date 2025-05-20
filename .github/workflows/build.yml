@@ -46,6 +46,8 @@ jobs:
         
     - name: Build React app
       run: npm run build
+      env:
+        NODE_OPTIONS: '--openssl-legacy-provider'
       
     - name: Configure npm
       run: |
@@ -67,6 +69,7 @@ jobs:
         DEBUG: electron-builder
         ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: true
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NODE_OPTIONS: '--openssl-legacy-provider'
         
     - name: Make AppImage executable
       run: |
