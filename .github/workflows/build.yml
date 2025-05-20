@@ -28,7 +28,7 @@ jobs:
       run: |
         npm install
         npm uninstall node-sass
-        npm install --save-dev sass electron electron-builder @electron-forge/cli
+        npm install --save-dev sass electron@22.3.27 @electron-forge/cli @electron-forge/maker-appimage
         
     - name: Create electron main file
       run: |
@@ -72,7 +72,29 @@ jobs:
       run: |
         npm pkg set main="src/electron/main.js"
         npm pkg set scripts.electron-dev="electron ."
-        npm pkg set scripts.electron-pack="electron-builder -c.extraMetadata.main=src/electron/main.js"
+        npm pkg set scripts.package="electron-forge package"
+        npm pkg set scripts.make="electron-forge make"
+        
+    - name: Configure Forge
+      run: |
+        echo '{
+          "packagerConfig": {
+            "name": "MarkItDown",
+            "executableName": "markitdown",
+            "icon": "./assets/icon",
+            "asar": true
+          },
+          "makers": [
+            {
+              "name": "@electron-forge/maker-appimage",
+              "config": {
+                "options": {
+                  "bin": "markitdown"
+                }
+              }
+            }
+          ]
+        }' > forge.config.js
         
     - name: Build React app
       run: npm run build
@@ -84,13 +106,18 @@ jobs:
         
     - name: Build AppImage
       run: |
-        npm run electron-pack -- --linux AppImage --config.electronVersion=25.9.8
+        echo "Starting build process..."
+        npm run package
+        echo "Package completed, starting make..."
+        npm run make
+        echo "Make completed, checking output..."
+        ls -la out/
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: true
+        DEBUG: electron-forge:*
+        ELECTRON_FORGE_LOGGING: true
         
     - name: Upload AppImage
       uses: actions/upload-artifact@v4
       with:
         name: markItDown.AppImage
-        path: dist/*.AppImage 
+        path: out/**/*.AppImage 
