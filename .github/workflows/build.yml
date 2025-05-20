@@ -43,8 +43,6 @@ jobs:
         npm pkg set build.productName="MarkItDown"
         npm pkg set build.linux.target="['AppImage']"
         npm pkg set build.linux.category="Office"
-        npm pkg set build.extraMetadata.main="main.js"
-        npm pkg set build.extraResources="['main.js']"
         
     - name: Build React app
       run: npm run build
@@ -57,7 +55,20 @@ jobs:
     - name: Build AppImage
       run: |
         echo "Starting build process..."
-        npm run electron-pack -- --linux AppImage --config.extraMetadata.main=main.js --config.extraResources=main.js
+        # 创建临时目录并复制必要文件
+        mkdir -p temp_build
+        cp -r build/* temp_build/
+        cp main.js temp_build/
+        cp package.json temp_build/
+        cp -r node_modules temp_build/
+        
+        # 使用临时目录进行构建
+        cd temp_build
+        npm run electron-pack -- --linux AppImage
+        cd ..
+        
+        # 移动构建产物到正确位置
+        mv temp_build/dist/* dist/
         echo "Build completed, checking output..."
         ls -la dist/
       env:
