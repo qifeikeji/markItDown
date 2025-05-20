@@ -28,7 +28,7 @@ jobs:
       run: |
         npm install
         npm uninstall node-sass
-        npm install --save-dev sass electron@22.3.27 electron-builder@23.6.0
+        npm install --save-dev sass electron@22.3.27 electron-builder@23.6.0 electron-is-dev
         
     - name: Create electron main file
       run: |
@@ -92,6 +92,10 @@ jobs:
         DEBUG: electron-builder
         ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: true
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Make AppImage executable
+      run: |
+        chmod +x dist/*.AppImage
         
     - name: Upload AppImage
       uses: actions/upload-artifact@v4
