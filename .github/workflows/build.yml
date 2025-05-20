@@ -31,57 +31,20 @@ jobs:
         npm install --save sass electron-is-dev
         npm install --save-dev electron@22.3.27 electron-builder@23.6.0
         
-    - name: Create electron main file
-      run: |
-        echo 'const { app, BrowserWindow } = require("electron");
-        const path = require("path");
-        const isDev = require("electron-is-dev");
-
-        function createWindow() {
-          const win = new BrowserWindow({
-            width: 1200,
-            height: 800,
-            webPreferences: {
-              nodeIntegration: true,
-              contextIsolation: false
-            }
-          });
-
-          win.loadURL(
-            isDev
-              ? "http://localhost:3000"
-              : `file://${path.join(__dirname, "build/index.html")}`
-          );
-        }
-
-        app.whenReady().then(createWindow);
-
-        app.on("window-all-closed", () => {
-          if (process.platform !== "darwin") {
-            app.quit();
-          }
-        });
-
-        app.on("activate", () => {
-          if (BrowserWindow.getAllWindows().length === 0) {
-            createWindow();
-          }
-        });' > electron.js
-
     - name: Update package.json
       run: |
-        npm pkg set main="electron.js"
+        npm pkg set main="main.js"
         npm pkg set scripts.electron-dev="electron ."
         npm pkg set scripts.electron-pack="electron-builder"
-        npm pkg set build.files="['build/**/*', 'electron.js', 'node_modules/**/*']"
+        npm pkg set build.files="['build/**/*', 'main.js', 'node_modules/**/*']"
         npm pkg set build.asar=true
         npm pkg set build.asarUnpack="['node_modules/electron-is-dev/**/*']"
         npm pkg set build.appId="com.markitdown.app"
         npm pkg set build.productName="MarkItDown"
         npm pkg set build.linux.target="['AppImage']"
         npm pkg set build.linux.category="Office"
-        npm pkg set build.extraMetadata.main="electron.js"
-        npm pkg set build.extraResources="['electron.js']"
+        npm pkg set build.extraMetadata.main="main.js"
+        npm pkg set build.extraResources="['main.js']"
         
     - name: Build React app
       run: npm run build
@@ -94,7 +57,7 @@ jobs:
     - name: Build AppImage
       run: |
         echo "Starting build process..."
-        npm run electron-pack -- --linux AppImage --config.extraMetadata.main=electron.js --config.extraResources=electron.js
+        npm run electron-pack -- --linux AppImage --config.extraMetadata.main=main.js --config.extraResources=main.js
         echo "Build completed, checking output..."
         ls -la dist/
       env:
