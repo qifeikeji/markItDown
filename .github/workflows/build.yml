@@ -17,7 +17,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '16'
+        node-version: '18'
         
     - name: Install system dependencies
       run: |
@@ -27,9 +27,9 @@ jobs:
     - name: Install dependencies
       run: |
         npm install
-        npm uninstall node-sass
+        npm uninstall node-sass @testing-library/user-event
         npm install --save sass electron-is-dev
-        npm install --save-dev electron@22.3.27 electron-builder@23.6.0
+        npm install --save-dev electron@latest electron-builder@latest
         
     - name: Update package.json
       run: |
@@ -55,20 +55,12 @@ jobs:
     - name: Build AppImage
       run: |
         echo "Starting build process..."
-        # 创建临时目录并复制必要文件
-        mkdir -p temp_build
-        cp -r build/* temp_build/
-        cp main.js temp_build/
-        cp package.json temp_build/
-        cp -r node_modules temp_build/
-        
-        # 使用临时目录进行构建
-        cd temp_build
+        echo "Current directory structure:"
+        ls -la
+        echo "Build directory structure:"
+        ls -la build/
+        echo "Running electron-builder..."
         npm run electron-pack -- --linux AppImage
-        cd ..
-        
-        # 移动构建产物到正确位置
-        mv temp_build/dist/* dist/
         echo "Build completed, checking output..."
         ls -la dist/
       env:
