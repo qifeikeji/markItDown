@@ -33,7 +33,6 @@ jobs:
         
     - name: Create electron main file
       run: |
-        mkdir -p src/electron
         echo 'const { app, BrowserWindow } = require("electron");
         const path = require("path");
         const isDev = require("electron-is-dev");
@@ -51,7 +50,7 @@ jobs:
           win.loadURL(
             isDev
               ? "http://localhost:3000"
-              : `file://${path.join(__dirname, "../build/index.html")}`
+              : `file://${path.join(__dirname, "build/index.html")}`
           );
         }
 
@@ -67,14 +66,14 @@ jobs:
           if (BrowserWindow.getAllWindows().length === 0) {
             createWindow();
           }
-        });' > src/electron/main.js
+        });' > main.js
 
     - name: Update package.json
       run: |
-        npm pkg set main="src/electron/main.js"
+        npm pkg set main="main.js"
         npm pkg set scripts.electron-dev="electron ."
-        npm pkg set scripts.electron-pack="electron-builder -c.extraMetadata.main=src/electron/main.js"
-        npm pkg set build.files="['build/**/*', 'src/electron/**/*', 'node_modules/**/*']"
+        npm pkg set scripts.electron-pack="electron-builder"
+        npm pkg set build.files="['build/**/*', 'main.js', 'node_modules/**/*']"
         npm pkg set build.asar=true
         npm pkg set build.asarUnpack="['node_modules/electron-is-dev/**/*']"
         
