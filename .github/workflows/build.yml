@@ -44,6 +44,7 @@ jobs:
       run: |
         echo "Updating dependencies to latest versions..."
         npm install --legacy-peer-deps @mui/material@latest @mui/lab@latest
+        npm install --legacy-peer-deps @emotion/react@latest @emotion/styled@latest
         npm install --legacy-peer-deps @testing-library/jest-dom@latest @testing-library/react@latest @testing-library/user-event@latest
         npm install --legacy-peer-deps babel-plugin-prismjs@latest dompurify@latest marked@latest prismjs@latest
         npm install --legacy-peer-deps react@latest react-dom@latest react-full-screen@latest react-icons@latest react-split@latest
