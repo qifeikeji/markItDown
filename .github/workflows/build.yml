@@ -18,21 +18,35 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
+        cache: 'npm'
         
     - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y python3 python-is-python3 build-essential
         
+    - name: Configure npm
+      run: |
+        echo "registry=https://registry.npmmirror.com/" > .npmrc
+        echo "electron_mirror=https://npmmirror.com/mirrors/electron/" >> .npmrc
+        echo "electron-builder-binaries_mirror=https://npmmirror.com/mirrors/electron-builder-binaries/" >> .npmrc
+        cat .npmrc
+        
     - name: Install dependencies
       run: |
+        echo "Installing dependencies..."
         npm install
+        echo "Removing problematic dependencies..."
         npm uninstall node-sass @testing-library/user-event
+        echo "Installing required dependencies..."
         npm install --save sass electron-is-dev
+        echo "Installing dev dependencies..."
         npm install --save-dev electron@latest electron-builder@latest
+        echo "Dependencies installed successfully"
         
     - name: Update package.json
       run: |
+        echo "Updating package.json configuration..."
         npm pkg set main="main.js"
         npm pkg set scripts.electron-dev="electron ."
         npm pkg set scripts.electron-pack="electron-builder"
@@ -43,21 +57,20 @@ jobs:
         npm pkg set build.productName="MarkItDown"
         npm pkg set build.linux.target="['AppImage']"
         npm pkg set build.linux.category="Office"
+        echo "Package.json updated successfully"
         
     - name: Build React app
       run: |
+        echo "Building React application..."
         export NODE_OPTIONS=--openssl-legacy-provider
         npm run build
+        echo "React build completed"
+        echo "Checking build directory contents:"
+        ls -la build/
       
-    - name: Configure npm
-      run: |
-        echo "registry=https://registry.npmmirror.com/" > .npmrc
-        echo "electron_mirror=https://npmmirror.com/mirrors/electron/" >> .npmrc
-        echo "electron-builder-binaries_mirror=https://npmmirror.com/mirrors/electron-builder-binaries/" >> .npmrc
-        
     - name: Build AppImage
       run: |
-        echo "Starting build process..."
+        echo "Starting AppImage build process..."
         echo "Current directory structure:"
         ls -la
         echo "Build directory structure:"
@@ -74,7 +87,9 @@ jobs:
         
     - name: Make AppImage executable
       run: |
+        echo "Making AppImage executable..."
         chmod +x dist/*.AppImage
+        echo "AppImage permissions updated"
         
     - name: Upload AppImage
       uses: actions/upload-artifact@v4
