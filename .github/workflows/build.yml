@@ -85,6 +85,10 @@ jobs:
         npm pkg set build.productName="MarkItDown"
         npm pkg set build.linux.target="['AppImage']"
         npm pkg set build.linux.category="Office"
+        npm pkg set build.extraMetadata.main="main.js"
+        npm pkg set build.extraResources="['main.js']"
+        npm pkg set build.directories.output="dist"
+        npm pkg set build.directories.buildResources="build"
         echo "Package.json updated successfully"
         
     - name: Build React app
@@ -106,6 +110,13 @@ jobs:
         echo "React build completed"
         echo "Checking build directory contents:"
         ls -la build/
+        
+    - name: Copy main.js to build directory
+      run: |
+        echo "Copying main.js to build directory..."
+        cp main.js build/
+        echo "Build directory contents after copy:"
+        ls -la build/
       
     - name: Build AppImage
       run: |
@@ -115,8 +126,7 @@ jobs:
         echo "Build directory structure:"
         ls -la build/
         echo "Running electron-builder..."
-        export NODE_OPTIONS=--openssl-legacy-provider
-        npm run electron-pack -- --linux AppImage
+        npm run electron-pack -- --linux AppImage --config.extraMetadata.main=main.js --config.extraResources=main.js
         echo "Build completed, checking output..."
         ls -la dist/
       env:
