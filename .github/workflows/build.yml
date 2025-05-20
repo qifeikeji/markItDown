@@ -28,7 +28,8 @@ jobs:
       run: |
         npm install
         npm uninstall node-sass
-        npm install --save sass electron@22.3.27 electron-builder@23.6.0 electron-is-dev
+        npm install --save sass electron-is-dev
+        npm install --save-dev electron@22.3.27 electron-builder@23.6.0
         
     - name: Create electron main file
       run: |
