@@ -28,7 +28,7 @@ jobs:
       run: |
         npm install
         npm uninstall node-sass
-        npm install --save-dev sass electron@22.3.27 electron-builder@23.6.0 electron-is-dev
+        npm install --save sass electron@22.3.27 electron-builder@23.6.0 electron-is-dev
         
     - name: Create electron main file
       run: |
@@ -73,6 +73,9 @@ jobs:
         npm pkg set main="src/electron/main.js"
         npm pkg set scripts.electron-dev="electron ."
         npm pkg set scripts.electron-pack="electron-builder -c.extraMetadata.main=src/electron/main.js"
+        npm pkg set build.files="['build/**/*', 'src/electron/**/*', 'node_modules/**/*']"
+        npm pkg set build.asar=true
+        npm pkg set build.asarUnpack="['node_modules/electron-is-dev/**/*']"
         
     - name: Build React app
       run: npm run build
