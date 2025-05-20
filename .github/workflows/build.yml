@@ -58,6 +58,7 @@ jobs:
         find src -type f -name "*.jsx" -o -name "*.js" | xargs sed -i 's/@material-ui\/lab/@mui\/lab/g'
         find src -type f -name "*.jsx" -o -name "*.js" | xargs sed -i 's/@material-ui\/styles/@mui\/styles/g'
         find src -type f -name "*.jsx" -o -name "*.js" | xargs sed -i 's/@material-ui\/icons/@mui\/icons-material/g'
+        find src -type f -name "*.jsx" -o -name "*.js" | xargs sed -i 's/import { Alert } from .@mui\/lab./import { Alert } from .@mui\/material./g'
         echo "Material-UI imports updated"
         
     - name: Update package.json
