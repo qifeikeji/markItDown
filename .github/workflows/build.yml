@@ -80,6 +80,8 @@ jobs:
         npm pkg set build.productName="MarkItDown"
         npm pkg set build.linux.target="['AppImage']"
         npm pkg set build.linux.category="Office"
+        npm pkg set build.extraMetadata.main="electron.js"
+        npm pkg set build.extraResources="['electron.js']"
         
     - name: Build React app
       run: npm run build
@@ -92,7 +94,7 @@ jobs:
     - name: Build AppImage
       run: |
         echo "Starting build process..."
-        npm run electron-pack -- --linux AppImage
+        npm run electron-pack -- --linux AppImage --config.extraMetadata.main=electron.js --config.extraResources=electron.js
         echo "Build completed, checking output..."
         ls -la dist/
       env:
